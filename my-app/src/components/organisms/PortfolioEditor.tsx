@@ -25,16 +25,14 @@ const columns: readonly Column[] = [
   { id: 'removeButton', label: '', minWidth: 60, },
 ];
 
-const DEFAULT_VALUES: Portfolio = {
-  portfolioName: "新しいポートフォリオ",
-  holdingStocks: [],
-};
+
 
 
 // ポートフォリオの編集用のコンポーネント
 const PortfolioEditor = (props: {
-  selectedProducts: Product[];
+  portfolio: Portfolio;
   popProduct: (product: Product) => void;
+  setPortfolio: (product: Portfolio) => void;
 }) => {
 
   const {
@@ -42,7 +40,7 @@ const PortfolioEditor = (props: {
     watch,
     reset,
   } = useForm<Portfolio>({
-    defaultValues: DEFAULT_VALUES
+    defaultValues: props.portfolio
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -50,19 +48,12 @@ const PortfolioEditor = (props: {
     name: "holdingStocks"
   });
 
-
   const holdingStocks = watch("holdingStocks");
 
   React.useEffect(() => {
-    // selectedProductsの要素内でholdingStocksに存在しないものを追加する
-    const newHoldingStocks = props.selectedProducts.filter((selectedProduct) => !holdingStocks.some((holdingStock) => holdingStock.productCode === selectedProduct.productCode)).map((selectedProduct) => ({
-      ...selectedProduct,
-      stock: 0,
-      purchasePrice: 0,
-    }));
-    reset({ holdingStocks: [...holdingStocks, ...newHoldingStocks] });
+    reset({ holdingStocks: props.portfolio.holdingStocks });
     calcTotalAndRatios();
-  }, [props.selectedProducts]);
+  }, [props.portfolio.holdingStocks]);
 
   const [total, setTotal] = React.useState(0);
   const [ratios, setRatios] = React.useState<Number[]>([]);
@@ -137,8 +128,9 @@ const PortfolioEditor = (props: {
                                   error={fieldState.invalid}
                                   helperText={fieldState.error?.message}
                                   onChange={(e) => {
-                                    calcTotalAndRatios()
+                                    calcTotalAndRatios();
                                     field.onChange(e);
+                                    props.setPortfolio(watch());
                                   }}
                                   // テキストボックスの後ろに単位を表示する
                                   InputProps={{

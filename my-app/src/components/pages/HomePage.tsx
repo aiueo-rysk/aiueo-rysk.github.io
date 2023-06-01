@@ -3,25 +3,34 @@ import React from 'react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Container, Paper, Tab } from '@mui/material';
 
-import { Product } from '../../types';
+import { Portfolio, Product } from '../../types';
 import PortfolioEditor from '../organisms/PortfolioEditor';
+import PortfolioViewer from '../organisms/PortfolioViewer';
 import ProductSelector from '../organisms/ProductSelector';
+
+const DEFAULT_VALUES: Portfolio = {
+  portfolioName: "新しいポートフォリオ",
+  holdingStocks: [],
+};
 
 // ホーム画面のコンポーネント
 const HomePage = () => {
 
   const [selectedProducts, setSelectedProducts] = React.useState<Product[]>([]);
+  const [portfolio, setPortfolio] = React.useState<Portfolio>(DEFAULT_VALUES);
 
   const pushProduct = (product: Product) => {
     setSelectedProducts([...selectedProducts, product]);
+    setPortfolio({...portfolio, holdingStocks: [...portfolio.holdingStocks, {...product, stock: 0, purchasePrice: 0}]})
   }
 
   const popProduct = (product: Product) => {
     setSelectedProducts(selectedProducts.filter((selectedProduct) => selectedProduct.productCode !== product.productCode));
+    setPortfolio({...portfolio, holdingStocks: portfolio.holdingStocks.filter((holdingStock) => holdingStock.productCode !== product.productCode)})
   }
 
+  // タブ関連
   const [value, setValue] = React.useState<"select" | "edit" | "view">("select");
-
   const handleChange = (event: React.ChangeEvent<{}>, newValue: "select" | "edit" | "view") => {
     setValue(newValue);
   };
@@ -40,9 +49,11 @@ const HomePage = () => {
             <ProductSelector selectedProducts={selectedProducts} pushProduct={pushProduct} />
           </TabPanel>
           <TabPanel value="edit">
-            <PortfolioEditor selectedProducts={selectedProducts} popProduct={popProduct} />
+            <PortfolioEditor portfolio={portfolio} popProduct={popProduct} setPortfolio={setPortfolio} />
           </TabPanel>
-          <TabPanel value="view">分析</TabPanel>
+          <TabPanel value="view">
+            <PortfolioViewer portfolio={portfolio} />
+          </TabPanel>
         </TabContext>
       </Box >
     </Container>
