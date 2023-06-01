@@ -3887,5 +3887,5 @@ export const PRODUCTS = [
     { productCode: '9995', productName: 'グローセル', topix17Industry: '商社・卸売', market: 'プライム（内国株式）' },
     { productCode: '9996', productName: 'サトー商会', topix17Industry: '商社・卸売', market: 'スタンダード（内国株式）' },
     { productCode: '9997', productName: 'ベルーナ', topix17Industry: '小売', market: 'プライム（内国株式）' },
-]
+] as const;
 

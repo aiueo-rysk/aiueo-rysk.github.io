@@ -1,22 +1,50 @@
-import exp from 'constants';
-import logo from '../../assets/logo.svg';
-import Autocomplete from '@mui/material/Autocomplete';
-import { PRODUCTS } from '../../assets/data';
-import { Box, Container, TextField } from '@mui/material';
+import React from 'react';
+
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { Box, Container, Paper, Tab } from '@mui/material';
+
+import { Product } from '../../types';
+import PortfolioEditor from '../organisms/PortfolioEditor';
+import ProductSelector from '../organisms/ProductSelector';
 
 // ホーム画面のコンポーネント
-const HomePage: React.FC = () => {
+const HomePage = () => {
+
+  const [selectedProducts, setSelectedProducts] = React.useState<Product[]>([]);
+
+  const pushProduct = (product: Product) => {
+    setSelectedProducts([...selectedProducts, product]);
+  }
+
+  const popProduct = (product: Product) => {
+    setSelectedProducts(selectedProducts.filter((selectedProduct) => selectedProduct.productCode !== product.productCode));
+  }
+
+  const [value, setValue] = React.useState<"select" | "edit" | "view">("select");
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: "select" | "edit" | "view") => {
+    setValue(newValue);
+  };
+
+
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="lg">
       <Box m={3}>
-      <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          options={PRODUCTS.map((option) => `${option.productCode} ${option.productName}`)}
-          sx={{ width: 500 }}
-          renderInput={(params) => <TextField {...params} label="銘柄検索" />}
-        />
-      </Box>
+        <TabContext value={value}>
+          <TabList onChange={handleChange} component={Paper} >
+            <Tab label="1. 銘柄選択" value="select" style={{ minWidth: 150 }} />
+            <Tab label="2. ポートフォリオ編集" value="edit" style={{ minWidth: 150 }} />
+            <Tab label="3. 分析" value="view" style={{ minWidth: 150 }} />
+          </TabList>
+          <TabPanel value="select">
+            <ProductSelector selectedProducts={selectedProducts} pushProduct={pushProduct} />
+          </TabPanel>
+          <TabPanel value="edit">
+            <PortfolioEditor selectedProducts={selectedProducts} popProduct={popProduct} />
+          </TabPanel>
+          <TabPanel value="view">分析</TabPanel>
+        </TabContext>
+      </Box >
     </Container>
   );
 }

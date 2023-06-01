@@ -1,5 +1,4 @@
-import { z } from "zod";
-
+import { z } from 'zod';
 
 // 銘柄コード
 const ProductCode = z.string().min(4).max(4)
@@ -8,7 +7,7 @@ const ProductCode = z.string().min(4).max(4)
 const ProductName = z.string().min(1).max(50)
 
 // TOPIX-17の業種区分
-const Topix17Industry = z.enum([
+export const TOPIX_17INDUSTRY = [
     "食品",
     "エネルギー資源",
     "建設・資材",
@@ -26,10 +25,14 @@ const Topix17Industry = z.enum([
     "銀行",
     "金融（除く銀行）",
     "不動産",
-]);
+] as const;
+
+const Topix17Industry = z.enum(
+    TOPIX_17INDUSTRY
+    );
 
 // 33業種区分
-const Industry33 = z.enum([
+export const INDUSTRY33 = [
     "水産・農林業",
     "食料品",
     "鉱業",
@@ -63,19 +66,20 @@ const Industry33 = z.enum([
     "保険業",
     "その他金融業",
     "不動産業",
-]);
+] as const
+const Industry33 = z.enum(INDUSTRY33);
 
 // 市場・商品区分
-const Market = z.enum([
+export const MARKET = [
     "PRO Market",
     "グロース（外国株式）",
     "グロース（内国株式）",
     "スタンダード（外国株式）",
     "スタンダード（内国株式）",
     "プライム（外国株式）",
-    "プライム（内国株式）",
-])
-
+    "プライム（内国株式）"
+] as const;
+const Market = z.enum(MARKET)
 
 // 銘柄
 const Product = z.object({
@@ -97,5 +101,13 @@ const HoldingStock = Product.extend({
     purchasePrice: PurchasePrice
 });
 
+// ポートフォリオ
+const Portfolio = z.object({
+    portfolioName: z.string().min(1).max(50),
+    holdingStocks: z.array(HoldingStock),
+});
+
+export type Topix17Industry = z.infer<typeof Topix17Industry>;
 export type Product = z.infer<typeof Product>;
 export type HoldingStock = z.infer<typeof HoldingStock>;
+export type Portfolio = z.infer<typeof Portfolio>;
