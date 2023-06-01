@@ -1,4 +1,4 @@
-# Reactのサンプルリポジトリです
+# React＋MaterialUIの練習用のリポジトリです
 以下のURLで公開しています。
 https://aiueo-rysk.github.io/
 
@@ -33,6 +33,7 @@ src
 ## 起動方法
 1. vscodeでルートフォルダを開く
 1. `cd my-app` でディレクトリ移動
+1. `npm install` でモジュールをインストール（初回のみ）
 1. `npm start` でlocalhost:3000で起動
 
 
